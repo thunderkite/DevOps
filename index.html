@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps: Современный конспект по Docker, Kubernetes и Ansible</title>
+    <meta name="description" content="Полный интерактивный конспект по DevOps, Docker, Kubernetes и Ansible с современным дизайном и визуализацией">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fab fa-docker"></i>
+                DevOps Guide
+            </div>
+            <div class="nav-search">
+                <input type="text" id="searchInput" placeholder="Поиск по содержимому..." aria-label="Поиск">
+                <i class="fas fa-search"></i>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-content">
+            <ul class="toc">
+                <li><a href="#intro" data-section="intro">1. Введение</a></li>
+                <li><a href="#devops" data-section="devops">2. DevOps</a></li>
+                <li><a href="#terms" data-section="terms">3. Базовые термины</a></li>
+                <li><a href="#docker" data-section="docker">4. Docker</a>
+                    <ul>
+                        <li><a href="#docker-evolution" data-section="docker-evolution">Эволюция изоляции</a></li>
+                        <li><a href="#docker-architecture" data-section="docker-architecture">Архитектура</a></li>
+                        <li><a href="#overlayfs" data-section="overlayfs">OverlayFS</a></li>
+                        <li><a href="#docker-networks" data-section="docker-networks">Сети</a></li>
+                        <li><a href="#docker-commands" data-section="docker-commands">Команды</a></li>
+                        <li><a href="#dockerfile-examples" data-section="dockerfile-examples">Примеры Dockerfile</a></li>
+                    </ul>
+                </li>
+                <li><a href="#kubernetes" data-section="kubernetes">5. Kubernetes</a>
+                    <ul>
+                        <li><a href="#k8s-components" data-section="k8s-components">Компоненты</a></li>
+                        <li><a href="#k8s-networking" data-section="k8s-networking">Сетевая модель</a></li>
+                        <li><a href="#kubectl" data-section="kubectl">kubectl команды</a></li>
+                        <li><a href="#k8s-manifests" data-section="k8s-manifests">Манифесты</a></li>
+                        <li><a href="#k8s-troubleshooting" data-section="k8s-troubleshooting">Траблшутинг</a></li>
+                    </ul>
+                </li>
+                <li><a href="#ansible" data-section="ansible">6. Ansible</a></li>
+                <li><a href="#cheatsheets" data-section="cheatsheets">7. Шпаргалки</a></li>
+                <li><a href="#recommendations" data-section="recommendations">8. Рекомендации</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Introduction Section -->
+        <section id="intro" class="content-section">
+            <h1><i class="fas fa-rocket"></i> Введение: зачем нужны современные подходы к ИТ-инфраструктуре?</h1>
+            
+            <div class="intro-cards">
+                <div class="card old-approach">
+                    <h3><i class="fas fa-times-circle"></i> Старый подход</h3>
+                    <ul>
+                        <li>Разработчики, тестировщики и системные администраторы работали раздельно</li>
+                        <li>Всё делалось вручную, коммуникации между отделами были минимальны</li>
+                        <li>Для оффлайн-программ и редких обновлений это подходило</li>
+                        <li>С появлением веб-сервисов рынок потребовал частых и быстрых релизов</li>
+                    </ul>
+                </div>
+                <div class="card new-approach">
+                    <h3><i class="fas fa-check-circle"></i> Результат</h3>
+                    <p>Возникла необходимость в новом подходе для ускорения выпуска ПО и повышения качества.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- DevOps Section -->
+        <section id="devops" class="content-section">
+            <h1><i class="fab fa-dev"></i> DevOps: история и суть</h1>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">2007</div>
+                    <div class="timeline-content">
+                        <h3>Начало движения</h3>
+                        <p>Патрик Дебуа (Бельгия) сталкивается с проблемами между Dev и Ops</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2009</div>
+                    <div class="timeline-content">
+                        <h3>DevOpsDays</h3>
+                        <p>Первая DevOpsDays — отправная точка мирового движения</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="definition-card">
+                <h3><i class="fas fa-user-cog"></i> Кто такие DevOps-инженеры?</h3>
+                <p>DevOps-инженер — это специалист, который объединяет разработку, тестирование и эксплуатацию в единый автоматизированный процесс, создает и поддерживает инфраструктуру, автоматизирует рутинные задачи и обеспечивает быструю доставку ПО.</p>
+            </div>
+
+            <div class="methodology-section">
+                <h3><i class="fas fa-cogs"></i> Методология DevOps</h3>
+                <div class="methodology-points">
+                    <div class="point">
+                        <i class="fas fa-handshake"></i>
+                        <p>DevOps — это не только инструменты, но и культура совместной работы</p>
+                    </div>
+                    <div class="point">
+                        <i class="fas fa-rocket"></i>
+                        <p>Задача: ускорить и упростить выпуск новых версий ПО</p>
+                    </div>
+                    <div class="point">
+                        <i class="fas fa-tools"></i>
+                        <p>Основные инструменты: системы контроля версий, CI/CD, мониторинг, контейнеризация, инфраструктура как код</p>
+                    </div>
+                    <div class="point">
+                        <i class="fas fa-link"></i>
+                        <p>DevOps-инженер — наладчик коммуникаций и автоматизации</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="problems-solutions">
+                <h3><i class="fas fa-wrench"></i> Какие проблемы решает DevOps?</h3>
+                <div class="problem-solution-grid">
+                    <div class="problem-card">
+                        <div class="problem">
+                            <i class="fas fa-clock"></i>
+                            <h4>Медленные релизы</h4>
+                        </div>
+                        <div class="solution">
+                            <i class="fas fa-arrow-right"></i>
+                            <p>CI/CD и автоматизация</p>
+                        </div>
+                    </div>
+                    <div class="problem-card">
+                        <div class="problem">
+                            <i class="fas fa-users-slash"></i>
+                            <h4>Плохое взаимодействие между отделами</h4>
+                        </div>
+                        <div class="solution">
+                            <i class="fas fa-arrow-right"></i>
+                            <p>Единая среда и процессы</p>
+                        </div>
+                    </div>
+                    <div class="problem-card">
+                        <div class="problem">
+                            <i class="fas fa-hand-paper"></i>
+                            <h4>Рутинные ручные задачи</h4>
+                        </div>
+                        <div class="solution">
+                            <i class="fas fa-arrow-right"></i>
+                            <p>Автоматизация</p>
+                        </div>
+                    </div>
+                    <div class="problem-card">
+                        <div class="problem">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h4>Недостаточная стабильность</h4>
+                        </div>
+                        <div class="solution">
+                            <i class="fas fa-arrow-right"></i>
+                            <p>Мониторинг, логирование, тестирование</p>
+                        </div>
+                    </div>
+                    <div class="problem-card">
+                        <div class="problem">
+                            <i class="fas fa-lock"></i>
+                            <h4>Отсутствие гибкости</h4>
+                        </div>
+                        <div class="solution">
+                            <i class="fas fa-arrow-right"></i>
+                            <p>Контейнеризация, IaC</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="beneficiaries">
+                <h3><i class="fas fa-users"></i> Кому нужен DevOps?</h3>
+                <div class="beneficiary-grid">
+                    <div class="beneficiary-card">
+                        <i class="fas fa-code"></i>
+                        <h4>Разработчики</h4>
+                        <p>Быстрее тестируют и выкатывают код</p>
+                    </div>
+                    <div class="beneficiary-card">
+                        <i class="fas fa-server"></i>
+                        <h4>Операционные команды</h4>
+                        <p>Упрощают сопровождение</p>
+                    </div>
+                    <div class="beneficiary-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Бизнес</h4>
+                        <p>Быстрее выпускают новые фичи, увеличивают конкурентоспособность</p>
+                    </div>
+                    <div class="beneficiary-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h4>Безопасность</h4>
+                        <p>Внедрение DevSecOps</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Terms Section -->
+        <section id="terms" class="content-section">
+            <h1><i class="fas fa-book"></i> Базовые термины и концепции</h1>
+            
+            <div class="terms-grid">
+                <div class="term-card">
+                    <h3><i class="fas fa-spider"></i> Парсинг</h3>
+                    <p>Автоматический сбор и структурирование информации</p>
+                </div>
+                <div class="term-card">
+                    <h3><i class="fas fa-project-diagram"></i> Закон Конвея</h3>
+                    <p>Структура коммуникаций в компании определяет архитектуру создаваемых систем</p>
+                </div>
+                <div class="term-card">
+                    <h3><i class="fas fa-theater-masks"></i> Стейджинг</h3>
+                    <p>Среда, максимально близкая к продакшену, для финальных тестов</p>
+                </div>
+                <div class="term-card">
+                    <h3><i class="fas fa-chain"></i> Теория ограничений</h3>
+                    <p>Производительность системы определяется самым слабым звеном</p>
+                </div>
+                <div class="term-card">
+                    <h3><i class="fas fa-clipboard-list"></i> CALMS</h3>
+                    <p>Фреймворк внедрения DevOps: Culture, Automation, Lean, Measurement, Sharing</p>
+                </div>
+                <div class="term-card">
+                    <h3><i class="fas fa-wall-brick"></i> Стена замешательства</h3>
+                    <p>Ситуация непонимания между Dev и Ops</p>
+                </div>
+                <div class="term-card">
+                    <h3><i class="fas fa-building"></i> Бункерный менталитет</h3>
+                    <p>Отсутствие коммуникаций между отделами</p>
+                </div>
+                <div class="term-card">
+                    <h3><i class="fas fa-coins"></i> Бизнес-ценность</h3>
+                    <p>Соответствие/превышение ожиданий клиента (качество, скорость, затраты)</p>
+                </div>
+                <div class="term-card">
+                    <h3><i class="fas fa-list"></i> Декларативный подход</h3>
+                    <p>Описываем, что хотим получить</p>
+                </div>
+                <div class="term-card">
+                    <h3><i class="fas fa-code"></i> Императивный подход</h3>
+                    <p>Описываем, как получить результат</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Docker Section -->
+        <section id="docker" class="content-section">
+            <h1><i class="fab fa-docker"></i> Docker: контейнеризация и файловые системы</h1>
+            
+            <!-- Docker Evolution -->
+            <div id="docker-evolution" class="subsection">
+                <h2><i class="fas fa-history"></i> Эволюция изоляции приложений</h2>
+                <div class="evolution-timeline">
+                    <div class="evolution-item">
+                        <div class="year">1979</div>
+                        <div class="tech">chroot</div>
+                        <div class="description">Изолирует файловую систему</div>
+                    </div>
+                    <div class="evolution-item">
+                        <div class="year">2000</div>
+                        <div class="tech">FreeBSD jails</div>
+                        <div class="description">Расширенная изоляция</div>
+                    </div>
+                    <div class="evolution-item">
+                        <div class="year">2008</div>
+                        <div class="tech">LXC</div>
+                        <div class="description">namespace + cgroups</div>
+                    </div>
+                    <div class="evolution-item">
+                        <div class="year">2013</div>
+                        <div class="tech">Docker</div>
+                        <div class="description">dotCloud создает Docker</div>
+                    </div>
+                </div>
+
+                <div class="namespace-cgroups">
+                    <div class="concept-card">
+                        <h3><i class="fas fa-layer-group"></i> namespace — изоляция ресурсов</h3>
+                        <p>Каждому контейнеру выделяется свой собственный набор пространств имен, что делает его процессы, сеть и файловую систему изолированными от хоста и других контейнеров.</p>
+                        <div class="namespace-types">
+                            <div class="namespace-type">
+                                <h4>pid</h4>
+                                <p>Каждый контейнер имеет свой независимый набор PID</p>
+                            </div>
+                            <div class="namespace-type">
+                                <h4>net</h4>
+                                <p>Свой сетевой стек, включая интерфейсы, IP-адреса, маршрутизацию, DNS</p>
+                            </div>
+                            <div class="namespace-type">
+                                <h4>mnt</h4>
+                                <p>Собственное пространство монтирования файловой системы</p>
+                            </div>
+                            <div class="namespace-type">
+                                <h4>uts</h4>
+                                <p>Изоляция имени хоста и доменного имени</p>
+                            </div>
+                            <div class="namespace-type">
+                                <h4>ipc</h4>
+                                <p>Изоляция средств межпроцессного взаимодействия</p>
+                            </div>
+                            <div class="namespace-type">
+                                <h4>user</h4>
+                                <p>Изоляция пользовательских и групповых ID</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="concept-card">
+                        <h3><i class="fas fa-tachometer-alt"></i> cgroups — ограничение ресурсов</h3>
+                        <p>Позволяют Docker управлять тем, сколько ресурсов хоста может использовать контейнер (CPU, память, I/O, сеть), предотвращая монополизацию ресурсов одним контейнером.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Docker Architecture -->
+            <div id="docker-architecture" class="subsection">
+                <h2><i class="fas fa-sitemap"></i> Архитектура Docker</h2>
+                
+                <div class="architecture-diagram">
+                    <div class="architecture-flow">
+                        <div class="arch-component user">
+                            <i class="fas fa-user"></i>
+                            <span>Пользователь</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-component cli">
+                            <i class="fas fa-terminal"></i>
+                            <span>Docker CLI</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-component daemon">
+                            <i class="fas fa-server"></i>
+                            <span>dockerd</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-component containerd">
+                            <i class="fas fa-boxes"></i>
+                            <span>containerd</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-component shim">
+                            <i class="fas fa-link"></i>
+                            <span>shim</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-component runc">
+                            <i class="fas fa-play"></i>
+                            <span>runc</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-component container">
+                            <i class="fas fa-cube"></i>
+                            <span>контейнер</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="components-explanation">
+                    <div class="component-card">
+                        <h4><i class="fas fa-terminal"></i> Docker CLI</h4>
+                        <p>Интерфейс командной строки для взаимодействия с Docker Daemon. Пользователь вводит команды docker run, docker build и т.д.</p>
+                    </div>
+                    <div class="component-card">
+                        <h4><i class="fas fa-server"></i> Docker Daemon (dockerd)</h4>
+                        <p>Фоновый процесс, работающий на хосте. Он отвечает за создание, запуск и управление Docker-объектами. Daemon слушает запросы от Docker CLI через REST API.</p>
+                    </div>
+                    <div class="component-card">
+                        <h4><i class="fas fa-boxes"></i> containerd</h4>
+                        <p>Высокоуровневый демон, управляющий жизненным циклом контейнеров на хосте. Он берет на себя управление образами, хранение, управление низкоуровневыми запусками контейнеров.</p>
+                    </div>
+                    <div class="component-card">
+                        <h4><i class="fas fa-play"></i> runc</h4>
+                        <p>Легковесная, универсальная утилита командной строки для запуска контейнеров в соответствии со спецификацией OCI. runc фактически создает и запускает контейнер, используя namespace и cgroups ядра Linux.</p>
+                    </div>
+                    <div class="component-card">
+                        <h4><i class="fas fa-link"></i> shim</h4>
+                        <p>Процесс-посредник между containerd и запущенным контейнером. Он позволяет containerd отсоединиться от runc после запуска контейнера, при этом сохраняя ввод/вывод контейнера и его статус.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OverlayFS Section -->
+            <div id="overlayfs" class="subsection">
+                <h2><i class="fas fa-layer-group"></i> OverlayFS, overlay2 и файловые системы</h2>
+                
+                <div class="fs-concepts">
+                    <div class="fs-concept">
+                        <h4><i class="fas fa-hdd"></i> ext4</h4>
+                        <p>Наиболее распространённая файловая система для раздела диска в Linux. На ней физически хранятся данные Docker в директории /var/lib/docker.</p>
+                    </div>
+                    <div class="fs-concept">
+                        <h4><i class="fas fa-layer-group"></i> OverlayFS</h4>
+                        <p>Технология из ядра Linux, позволяющая объединять несколько директорий (слоёв) в одну виртуальную файловую систему. Это реализация концепции UnionFS.</p>
+                    </div>
+                    <div class="fs-concept">
+                        <h4><i class="fas fa-database"></i> overlay2</h4>
+                        <p>Рекомендуемый драйвер хранения в Docker, использующий OverlayFS для эффективной работы со слоями контейнеров.</p>
+                    </div>
+                </div>
+
+                <div class="overlayfs-diagram">
+                    <h3><i class="fas fa-sitemap"></i> Структура хранения слоёв</h3>
+                    <div class="layer-stack">
+                        <div class="layer container-view">
+                            <i class="fas fa-eye"></i>
+                            <span>CONTAINER VIEW</span>
+                            <small>(Виртуальное объединенное представление всех слоев, предоставляемое OverlayFS)</small>
+                        </div>
+                        <div class="layer-separator">↑ Читает/Записывает через ↑</div>
+                        <div class="layer writable-layer">
+                            <i class="fas fa-edit"></i>
+                            <span>Writeable Layer</span>
+                            <small>Все изменения контейнера (создание, удаление, запись файлов)</small>
+                        </div>
+                        <div class="layer read-only-layer">
+                            <i class="fas fa-play"></i>
+                            <span>Read-Only Image Layer 3 (RUN)</span>
+                            <small>Результат команды RUN (например, установленные пакеты)</small>
+                        </div>
+                        <div class="layer read-only-layer">
+                            <i class="fas fa-copy"></i>
+                            <span>Read-Only Image Layer 2 (COPY)</span>
+                            <small>Скопированные файлы приложения</small>
+                        </div>
+                        <div class="layer read-only-layer">
+                            <i class="fas fa-download"></i>
+                            <span>Read-Only Image Layer 1 (FROM)</span>
+                            <small>Базовый образ (ОС + Python)</small>
+                        </div>
+                        <div class="layer-separator">↓ Все эти слои физически хранятся на ↓</div>
+                        <div class="layer host-fs">
+                            <i class="fas fa-server"></i>
+                            <span>Файловая система хоста (например, ext4)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overlayfs-work">
+                    <h3><i class="fas fa-cogs"></i> Как работает OverlayFS/overlay2</h3>
+                    <div class="overlay-parts">
+                        <div class="overlay-part">
+                            <h4><i class="fas fa-folder-open"></i> lowerdir (read-only)</h4>
+                            <p>Содержит слои образа, которые не меняются</p>
+                        </div>
+                        <div class="overlay-part">
+                            <h4><i class="fas fa-folder"></i> upperdir (read-write)</h4>
+                            <p>Сюда записываются все изменения, сделанные внутри контейнера</p>
+                        </div>
+                        <div class="overlay-part">
+                            <h4><i class="fas fa-tools"></i> workdir</h4>
+                            <p>Временная директория, используемая OverlayFS для подготовки файлов</p>
+                        </div>
+                    </div>
+
+                    <div class="check-driver">
+                        <h4><i class="fas fa-search"></i> Проверить используемый драйвер:</h4>
+                        <pre><code class="language-bash">docker info | grep "Storage Driver"
+# Обычно вывод: Storage Driver: overlay2</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Docker Networks -->
+            <div id="docker-networks" class="subsection">
+                <h2><i class="fas fa-network-wired"></i> Docker-сети</h2>
+                
+                <div class="network-types">
+                    <div class="network-type">
+                        <h3><i class="fas fa-bridge"></i> bridge (по умолчанию)</h3>
+                        <p>Стандартный сетевой драйвер. Docker создает виртуальный мост (docker0) на хосте. Контейнеры получают IP-адреса из подсети и могут взаимодействовать друг с другом.</p>
+                        <div class="network-details">
+                            <h4>Как работает bridge сеть:</h4>
+                            <ul>
+                                <li>Docker создает виртуальный мост docker0</li>
+                                <li>Каждому контейнеру назначается виртуальный Ethernet-интерфейс</li>
+                                <li>Создается пара veth интерфейсов (один в контейнере, другой подключен к мосту)</li>
+                                <li>Docker настраивает правила NAT в iptables</li>
+                                <li>Контейнеры видят друг друга только по IP (в пользовательских сетях — по имени)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="network-type">
+                        <h3><i class="fas fa-server"></i> host</h3>
+                        <p>Контейнер полностью использует сетевой стек хоста. Высокая производительность, но теряется сетевая изоляция.</p>
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Преимущества:</h4>
+                                <ul>
+                                    <li>Высокая производительность</li>
+                                    <li>Отсутствие NAT-преобразований</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Недостатки:</h4>
+                                <ul>
+                                    <li>Теряется сетевая изоляция</li>
+                                    <li>Возможны конфликты портов</li>
+                                    <li>Только для Linux</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="network-type">
+                        <h3><i class="fas fa-ban"></i> none/null</h3>
+                        <p>Контейнер не имеет сетевого интерфейса. Используется для контейнеров, которым не требуется сеть.</p>
+                    </div>
+
+                    <div class="network-type">
+                        <h3><i class="fas fa-cloud"></i> overlay</h3>
+                        <p>Для создания распределенных сетей между Docker-демонами на разных хостах (в Docker Swarm). Требует key-value store (Consul, Etcd, ZooKeeper) или Swarm mode.</p>
+                    </div>
+
+                    <div class="network-type">
+                        <h3><i class="fas fa-ethernet"></i> macvlan</h3>
+                        <p>Контейнер получает собственный MAC-адрес и IP-адрес из физической сети. Требует настройки сетевой карты хоста в promiscuous mode.</p>
+                    </div>
+                </div>
+
+                <div class="custom-networks">
+                    <h3><i class="fas fa-plus-circle"></i> Пользовательские сети</h3>
+                    <p>При создании своей сети Docker включает DNS — контейнеры видят друг друга по именам (service discovery).</p>
+                </div>
+            </div>
+
+            <!-- Docker Commands -->
+            <div id="docker-commands" class="subsection">
+                <h2><i class="fas fa-terminal"></i> Команды Docker</h2>
+                
+                <div class="command-groups">
+                    <div class="command-group">
+                        <h3><i class="fas fa-network-wired"></i> Работа с сетями</h3>
+                        <pre><code class="language-bash"># Список всех Docker-сетей
+docker network ls
+
+# Создать новую сеть
+docker network create -d &lt;драйвер&gt; &lt;имя&gt;
+
+# Пример пользовательской bridge-сети
+docker network create -d bridge my_custom_bridge_network
+
+# Macvlan сеть
+docker network create -d macvlan --subnet="192.168.1.0/24" --gateway="192.168.1.1" -o parent=eth0 my_macvlan_network
+
+# Детальная информация о сети
+docker inspect &lt;имя_сети&gt;
+
+# Подключить контейнер к сети
+docker network connect &lt;сеть&gt; &lt;контейнер&gt;
+
+# Отключить контейнер от сети
+docker network disconnect &lt;сеть&gt; &lt;контейнер&gt;
+
+# Удалить сеть
+docker network rm &lt;имя_сети&gt;
+
+# Удалить все неиспользуемые сети
+docker network prune</code></pre>
+                    </div>
+
+                    <div class="command-group">
+                        <h3><i class="fas fa-images"></i> Работа с образами</h3>
+                        <pre><code class="language-bash"># Загрузить образ
+docker pull &lt;образ&gt;:&lt;тег&gt;
+
+# Список локальных образов
+docker images
+
+# Удалить образ
+docker rmi &lt;образ&gt;:&lt;тег&gt;
+
+# Собрать образ из Dockerfile
+docker build . -t my_app:latest
+
+# Собрать образ из указанного Dockerfile
+docker build . -f Dockerfile.prod -t my_app:prod
+
+# Удалить неиспользуемые образы
+docker image prune
+
+# Показать слои образа
+docker image history &lt;образ&gt;
+
+# Сохранить образ в TAR-файл
+docker save -o my_app.tar my_app:latest
+
+# Загрузить образ из TAR-файла
+docker load -i my_app.tar</code></pre>
+                    </div>
+
+                    <div class="command-group">
+                        <h3><i class="fas fa-cube"></i> Работа с контейнерами</h3>
+                        <pre><code class="language-bash"># Запустить контейнер
+docker run -d -p 80:80 --name my_web_app my_app:latest
+
+# Список запущенных контейнеров
+docker ps
+
+# Список всех контейнеров
+docker ps -a
+
+# Остановить контейнер
+docker stop &lt;container_id/name&gt;
+
+# Запустить остановленный контейнер
+docker start &lt;container_id/name&gt;
+
+# Перезапустить контейнер
+docker restart &lt;container_id/name&gt;
+
+# Удалить контейнер
+docker rm &lt;container_id/name&gt;
+
+# Принудительно удалить контейнер
+docker rm -f &lt;container_id/name&gt;
+
+# Удалить все остановленные контейнеры
+docker container prune
+
+# Показать логи контейнера
+docker logs &lt;container_id/name&gt;
+
+# Следить за логами в реальном времени
+docker logs -f &lt;container_id/name&gt;
+
+# Запустить интерактивную оболочку
+docker exec -it &lt;container_id/name&gt; /bin/bash
+
+# Показать процессы внутри контейнера
+docker top &lt;container_id/name&gt;
+
+# Статистика использования ресурсов
+docker stats
+
+# Детальная информация о контейнере
+docker inspect &lt;container_id/name&gt;
+
+# Показать проброшенные порты
+docker port &lt;container_id/name&gt;
+
+# Обновить политику перезапуска
+docker update --restart=always &lt;container_id/name&gt;</code></pre>
+                    </div>
+
+                    <div class="command-group">
+                        <h3><i class="fas fa-database"></i> Работа с томами</h3>
+                        <pre><code class="language-bash"># Список всех томов
+docker volume ls
+
+# Создать новый том
+docker volume create &lt;имя_тома&gt;
+
+# Детальная информация о томе
+docker volume inspect &lt;имя_тома&gt;
+
+# Подключить том к контейнеру
+docker run -v my_data:/app/data my_app
+
+# Удалить неиспользуемые тома
+docker volume prune</code></pre>
+                    </div>
+
+                    <div class="command-group">
+                        <h3><i class="fas fa-tools"></i> Системные команды</h3>
+                        <pre><code class="language-bash"># Использование дискового пространства
+docker system df
+
+# Очистить все неиспользуемые ресурсы
+docker system prune -a</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dockerfile Examples -->
+            <div id="dockerfile-examples" class="subsection">
+                <h2><i class="fas fa-file-code"></i> Примеры Dockerfile</h2>
+                
+                <div class="dockerfile-examples">
+                    <div class="dockerfile-example">
+                        <h3><i class="fas fa-globe"></i> Простой Dockerfile для Nginx</h3>
+                        <pre><code class="language-dockerfile"># Использование официального образа Nginx в качестве базового
+FROM nginx:latest
+
+# Копирование пользовательской HTML-страницы в директорию Nginx
+COPY index.html /usr/share/nginx/html/index.html
+
+# Порт, который будет слушать контейнер
+EXPOSE 80
+
+# Команда для запуска Nginx
+CMD ["nginx", "-g", "daemon off;"]</code></pre>
+                    </div>
+
+                    <div class="dockerfile-example">
+                        <h3><i class="fab fa-python"></i> Dockerfile для Python Flask приложения</h3>
+                        <pre><code class="language-dockerfile"># Используем официальный образ Python
+FROM python:3.9-slim-buster
+
+# Устанавливаем рабочую директорию внутри контейнера
+WORKDIR /app
+
+# Копируем файл зависимостей и устанавливаем их
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Копируем остальной код приложения
+COPY . .
+
+# Открываем порт для Flask-приложения
+EXPOSE 5000
+
+# Запускаем приложение
+CMD ["python", "app.py"]</code></pre>
+                    </div>
+
+                    <div class="dockerfile-example">
+                        <h3><i class="fab fa-golang"></i> Multistage Dockerfile для Go-приложения</h3>
+                        <pre><code class="language-dockerfile"># --- Этап сборки (Builder Stage) ---
+FROM golang:1.20-alpine AS builder
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Копируем исходный код приложения
+COPY . .
+
+# Компилируем приложение
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
+
+# --- Этап запуска (Runner Stage) ---
+FROM alpine:latest
+
+# Устанавливаем рабочую директорию
+WORKDIR /root/
+
+# Копируем скомпилированный бинарник из этапа сборки
+COPY --from=builder /app/app .
+
+# Порт для приложения
+EXPOSE 8080
+
+# Запускаем приложение
+CMD ["./app"]</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Kubernetes Section -->
+        <section id="kubernetes" class="content-section">
+            <h1><i class="fas fa-dharmachakra"></i> Kubernetes: управление контейнерами</h1>
+            
+            <div class="definition-card">
+                <h3><i class="fas fa-question-circle"></i> Что такое Kubernetes?</h3>
+                <p>Система для автоматизации развёртывания, масштабирования и управления контейнерными приложениями.</p>
+            </div>
+
+            <!-- Kubernetes Components -->
+            <div id="k8s-components" class="subsection">
+                <h2><i class="fas fa-sitemap"></i> Основные компоненты</h2>
+                
+                <div class="k8s-architecture">
+                    <div class="control-plane">
+                        <h3><i class="fas fa-crown"></i> Control Plane (Master Node)</h3>
+                        <div class="component-grid">
+                            <div class="component-card">
+                                <i class="fas fa-server"></i>
+                                <h4>api-server</h4>
+                                <p>Точка входа для управления кластером. REST API, через который взаимодействуют все компоненты кластера и внешние пользователи.</p>
+                            </div>
+                            <div class="component-card">
+                                <i class="fas fa-calendar-alt"></i>
+                                <h4>scheduler</h4>
+                                <p>Отслеживает новые Pod'ы без назначенного узла и выбирает для них узел, основываясь на доступных ресурсах, ограничениях и политиках.</p>
+                            </div>
+                            <div class="component-card">
+                                <i class="fas fa-cog"></i>
+                                <h4>controller manager</h4>
+                                <p>Набор контроллеров: ReplicationController, EndpointsController, NodeController, ServiceAccountController.</p>
+                            </div>
+                            <div class="component-card">
+                                <i class="fas fa-database"></i>
+                                <h4>etcd</h4>
+                                <p>Распределенная база данных "ключ-значение", в которой хранится все состояние кластера Kubernetes.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="data-plane">
+                        <h3><i class="fas fa-worker"></i> Data Plane (Worker Node)</h3>
+                        <div class="component-grid">
+                            <div class="component-card">
+                                <i class="fas fa-robot"></i>
+                                <h4>kubelet</h4>
+                                <p>Агент на каждом рабочем узле. Общается с api-server, принимает определения Pod'ов и запускает их контейнеры через container runtime.</p>
+                            </div>
+                            <div class="component-card">
+                                <i class="fas fa-network-wired"></i>
+                                <h4>kube-proxy</h4>
+                                <p>Сетевой прокси, обеспечивающий сетевое подключение для Pod'ов и Service'ов. Поддерживает сетевые правила на узлах.</p>
+                            </div>
+                            <div class="component-card">
+                                <i class="fas fa-cube"></i>
+                                <h4>container runtime</h4>
+                                <p>ПО для запуска контейнеров. Может быть Docker, containerd, CRI-O и т.д.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="important-concepts">
+                    <h3><i class="fas fa-lightbulb"></i> Важные понятия</h3>
+                    <div class="concepts-grid">
+                        <div class="concept-card">
+                            <h4><i class="fas fa-handshake"></i> lease</h4>
+                            <p>Механизм выбора лидера среди узлов Control Plane и для обновления статуса узла</p>
+                        </div>
+                        <div class="concept-card">
+                            <h4><i class="fas fa-sync-alt"></i> Round Robin</h4>
+                            <p>Алгоритм балансировки нагрузки для распределения трафика между Pod'ами</p>
+                        </div>
+                        <div class="concept-card">
+                            <h4><i class="fas fa-map-marker-alt"></i> Endpoints</h4>
+                            <p>Объект, хранящий список IP-адресов и портов Pod'ов, предоставляющих сервис</p>
+                        </div>
+                        <div class="concept-card">
+                            <h4><i class="fas fa-pause"></i> Pause-контейнер</h4>
+                            <p>"Держит" namespace Pod'а. Первый контейнер в каждом Pod'е, предоставляющий общий сетевой namespace</p>
+                        </div>
+                        <div class="concept-card">
+                            <h4><i class="fas fa-star"></i> QOS-класс</h4>
+                            <p>Определяет приоритет Pod'ов по ресурсам: BestEffort, Burstable, Guaranteed</p>
+                        </div>
+                        <div class="concept-card">
+                            <h4><i class="fas fa-shield-alt"></i> Calico</h4>
+                            <p>CNI-плагин для сетевых политик и безопасности в Kubernetes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kubernetes Networking -->
+            <div id="k8s-networking" class="subsection">
+                <h2><i class="fas fa-network-wired"></i> Сетевая модель Kubernetes</h2>
+                
+                <div class="networking-principles">
+                    <div class="principle-card">
+                        <h3><i class="fas fa-id-card"></i> IP-адрес для каждого Pod'а</h3>
+                        <p>Каждый Pod в Kubernetes получает свой собственный уникальный IP-адрес в кластере. Это позволяет Pod'ам взаимодействовать друг с другом напрямую, без необходимости в NAT.</p>
+                    </div>
+                    <div class="principle-card">
+                        <h3><i class="fas fa-network-wired"></i> Flat network</h3>
+                        <p>Все Pod'ы могут общаться друг с другом напрямую, независимо от узла. Реализуется с помощью CNI плагинов.</p>
+                    </div>
+                    <div class="principle-card">
+                        <h3><i class="fas fa-search"></i> Service Discovery</h3>
+                        <p>Kubernetes Service предоставляет стабильный сетевой доступ к набору Pod'ов через кластерный IP и DNS-имя.</p>
+                    </div>
+                </div>
+
+                <div class="service-types">
+                    <h3><i class="fas fa-list"></i> Типы Service</h3>
+                    <div class="service-grid">
+                        <div class="service-type">
+                            <h4><i class="fas fa-server"></i> ClusterIP</h4>
+                            <p>Внутренний IP-адрес, доступный только внутри кластера</p>
+                        </div>
+                        <div class="service-type">
+                            <h4><i class="fas fa-door-open"></i> NodePort</h4>
+                            <p>Открывает порт на каждом узле кластера, который перенаправляет трафик на Service</p>
+                        </div>
+                        <div class="service-type">
+                            <h4><i class="fas fa-balance-scale"></i> LoadBalancer</h4>
+                            <p>Создает внешний балансировщик нагрузки, который маршрутизирует трафик к Service</p>
+                        </div>
+                        <div class="service-type">
+                            <h4><i class="fas fa-external-link-alt"></i> ExternalName</h4>
+                            <p>Сопоставляет Service с внешним DNS-именем</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cni-info">
+                    <h3><i class="fas fa-plug"></i> CNI (Container Network Interface)</h3>
+                    <p>Стандарт, определяющий интерфейс между платформой оркестрации контейнеров и сетевыми плагинами. CNI-плагины отвечают за настройку сети для Pod'ов.</p>
+                    <div class="cni-examples">
+                        <span class="cni-plugin">Calico</span>
+                        <span class="cni-plugin">Flannel</span>
+                        <span class="cni-plugin">Weave Net</span>
+                        <span class="cni-plugin">Cilium</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- kubectl Commands -->
+            <div id="kubectl" class="subsection">
+                <h2><i class="fas fa-terminal"></i> Работа с kubectl</h2>
+                
+                <div class="kubectl-sections">
+                    <div class="kubectl-section">
+                        <h3><i class="fas fa-rocket"></i> Работа с деплоями</h3>
+                        <pre><code class="language-bash"># История версий развертывания
+kubectl -n &lt;namespace&gt; rollout history deploy/&lt;deploy&gt;
+
+# Откат к предыдущей версии
+kubectl -n &lt;namespace&gt; rollout undo deploy/&lt;deploy&gt; --to-revision=&lt;n&gt;
+
+# Рестарт всех Pod'ов в развертывании
+kubectl -n &lt;namespace&gt; rollout restart deploy/&lt;deploy&gt;
+
+# Масштабирование количества реплик
+kubectl -n &lt;namespace&gt; scale deploy/&lt;deploy&gt; --replicas=&lt;n&gt;
+
+# Показать Pod'ы с их лейблами
+kubectl -n &lt;namespace&gt; get po --show-labels
+
+# Редактирование спецификации развертывания
+kubectl -n &lt;namespace&gt; edit deploy/&lt;deploy&gt;
+
+# Подключение к оболочке контейнера
+kubectl -n &lt;namespace&gt; exec -it &lt;pod&gt; -- /bin/bash</code></pre>
+                    </div>
+
+                    <div class="kubectl-section">
+                        <h3><i class="fas fa-list"></i> Основные команды</h3>
+                        <pre><code class="language-bash"># Получить список ресурсов
+kubectl get &lt;resource_type&gt;
+
+# Получить все основные ресурсы
+kubectl get all
+
+# Подробная информация о ресурсе
+kubectl describe &lt;resource_type&gt; &lt;name&gt;
+
+# Просмотреть логи Pod'а
+kubectl logs &lt;pod_name&gt; [-c &lt;container_name&gt;]
+
+# Следить за логами в реальном времени
+kubectl logs -f &lt;pod_name&gt;
+
+# Выполнить команду в контейнере
+kubectl exec -it &lt;pod_name&gt; -- /bin/bash
+
+# Удалить ресурс
+kubectl delete &lt;resource_type&gt; &lt;name&gt;
+
+# Создать или обновить ресурс из YAML
+kubectl apply -f &lt;file.yaml&gt;
+
+# Создать ресурс из YAML
+kubectl create -f &lt;file.yaml&gt;
+
+# Редактировать живой ресурс
+kubectl edit &lt;resource_type&gt;/&lt;name&gt;
+
+# Показать различия с YAML-файлом
+kubectl diff -f &lt;file.yaml&gt;
+
+# Показать события кластера
+kubectl get events
+
+# Использование ресурсов узлами
+kubectl top node
+
+# Использование ресурсов Pod'ами
+kubectl top pod
+
+# Текущая конфигурация kubeconfig
+kubectl config view
+
+# Переключиться на другой контекст
+kubectl config use-context &lt;context_name&gt;
+
+# Показать текущий контекст
+kubectl config current-context
+
+# Добавить taint на узел
+kubectl taint nodes &lt;node_name&gt; &lt;key&gt;=&lt;value&gt;:&lt;effect&gt;
+
+# Отметить узел как unschedulable
+kubectl cordon &lt;node_name&gt;
+
+# Вытеснить все Pod'ы с узла
+kubectl drain &lt;node_name&gt;
+
+# Отменить unschedulable на узле
+kubectl uncordon &lt;node_name&gt;
+
+# Проброс порта на Pod
+kubectl port-forward &lt;pod_name&gt; &lt;local_port&gt;:&lt;container_port&gt;
+
+# Копирование файлов в Pod
+kubectl cp &lt;file_path&gt; &lt;pod_name&gt;:/&lt;destination_path&gt;
+
+# Копирование файлов из Pod'а
+kubectl cp &lt;pod_name&gt;:/&lt;file_path&gt; &lt;local_destination_path&gt;</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kubernetes Manifests -->
+            <div id="k8s-manifests" class="subsection">
+                <h2><i class="fas fa-file-code"></i> Примеры манифестов Kubernetes</h2>
+                
+                <div class="manifest-examples">
+                    <div class="manifest-example">
+                        <h3><i class="fas fa-rocket"></i> Deployment: Развертывание Nginx</h3>
+                        <pre><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3 # Желаемое количество реплик Pod'ов
+  selector:
+    matchLabels:
+      app: nginx # Выбирает Pod'ы с этим лейблом
+  template:
+    metadata:
+      labels:
+        app: nginx # Лейбл для Pod'ов
+    spec:
+      containers:
+      - name: nginx # Имя контейнера
+        image: nginx:latest # Используемый образ Docker
+        ports:
+        - containerPort: 80 # Порт контейнера
+        resources: # Определение ресурсов и лимитов
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"</code></pre>
+                    </div>
+
+                    <div class="manifest-example">
+                        <h3><i class="fas fa-network-wired"></i> Service: Доступ к Nginx</h3>
+                        <pre><code class="language-yaml">apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx # Выбирает Pod'ы с лейблом app: nginx
+  ports:
+    - protocol: TCP
+      port: 80 # Порт Service
+      targetPort: 80 # Порт контейнера
+      nodePort: 30000 # Порт на каждом узле (для NodePort)
+  type: ClusterIP # Тип Service</code></pre>
+                    </div>
+
+                    <div class="manifest-example">
+                        <h3><i class="fas fa-cube"></i> Pod: Базовая единица</h3>
+                        <pre><code class="language-yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: myapp-container
+    image: busybox
+    command: ["sh", "-c", "echo 'Hello from Kubernetes!' && sleep 3600"]</code></pre>
+                    </div>
+
+                    <div class="manifest-example">
+                        <h3><i class="fas fa-layer-group"></i> Namespace: Изоляция ресурсов</h3>
+                        <pre><code class="language-yaml">apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev-environment</code></pre>
+                    </div>
+
+                    <div class="manifest-example">
+                        <h3><i class="fas fa-database"></i> PersistentVolumeClaim: Запрос на хранилище</h3>
+                        <pre><code class="language-yaml">apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce # Режим доступа
+  resources:
+    requests:
+      storage: 1Gi # Запросить 1 гигабайт</code></pre>
+                    </div>
+
+                    <div class="manifest-example">
+                        <h3><i class="fas fa-route"></i> Ingress: Внешний доступ по имени хоста</h3>
+                        <pre><code class="language-yaml">apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: myapp.example.com # Доменное имя
+    http:
+      paths:
+      - path: / # Путь
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-service # Имя Service
+            port:
+              number: 80 # Порт Service</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kubernetes Troubleshooting -->
+            <div id="k8s-troubleshooting" class="subsection">
+                <h2><i class="fas fa-bug"></i> Траблшутинг Kubernetes</h2>
+                
+                <div class="troubleshooting-sections">
+                    <div class="troubleshooting-section">
+                        <h3><i class="fas fa-search"></i> Проверка общего состояния кластера</h3>
+                        <pre><code class="language-bash"># Проверить состояние компонентов Control Plane
+kubectl get componentstatuses
+
+# Состояние узлов
+kubectl get nodes
+
+# Проверить все Pod'ы
+kubectl get pods --all-namespaces</code></pre>
+                    </div>
+
+                    <div class="troubleshooting-section">
+                        <h3><i class="fas fa-cube"></i> Траблшутинг Pod'ов</h3>
+                        <pre><code class="language-bash"># Подробная информация о Pod'е (ОБЯЗАТЕЛЬНО!)
+kubectl describe pod &lt;pod_name&gt;
+
+# Просмотр логов приложения
+kubectl logs &lt;pod_name&gt; [-c &lt;container_name&gt;]
+
+# Следить за логами в реальном времени
+kubectl logs -f &lt;pod_name&gt;
+
+# Логи за последний час
+kubectl logs --since=1h &lt;pod_name&gt;
+
+# Подключиться к контейнеру
+kubectl exec -it &lt;pod_name&gt; -- /bin/bash
+
+# Полная YAML-спецификация Pod'а
+kubectl get pod &lt;pod_name&gt; -o yaml
+
+# Удалить Pod (будет перезапущен Deployment'ом)
+kubectl delete pod &lt;pod_name&gt;</code></pre>
+                    </div>
+
+                    <div class="troubleshooting-section">
+                        <h3><i class="fas fa-rocket"></i> Траблшутинг Deployment'ов</h3>
+                        <pre><code class="language-bash"># Состояние Deployment'а
+kubectl describe deployment &lt;deployment_name&gt;
+
+# Статус развертывания
+kubectl rollout status deployment/&lt;deployment_name&gt;
+
+# История ревизий
+kubectl rollout history deployment/&lt;deployment_name&gt;
+
+# Проверить ReplicaSet
+kubectl get replicasets
+
+# Фильтрация Pod'ов по лейблам
+kubectl get pods -l app=&lt;label_value&gt;</code></pre>
+                    </div>
+
+                    <div class="troubleshooting-section">
+                        <h3><i class="fas fa-network-wired"></i> Траблшутинг Service'ов</h3>
+                        <pre><code class="language-bash"># Информация о Service
+kubectl describe service &lt;service_name&gt;
+
+# Проверить Endpoints (ВАЖНО!)
+kubectl get endpoints &lt;service_name&gt;
+
+# Список всех Service
+kubectl get svc
+
+# Из другого Pod'а проверить доступность
+# kubectl exec -it &lt;test_pod&gt; -- curl &lt;service_name&gt;:&lt;port&gt;</code></pre>
+                    </div>
+
+                    <div class="troubleshooting-section">
+                        <h3><i class="fas fa-server"></i> Траблшутинг узлов</h3>
+                        <pre><code class="language-bash"># Детальная информация об узле
+kubectl describe node &lt;node_name&gt;
+
+# Логи kubelet (на самом узле)
+# journalctl -u kubelet
+
+# Проверка дискового пространства (на узле)
+# df -h
+
+# Проверка inode (на узле)
+# df -i</code></pre>
+                    </div>
+
+                    <div class="troubleshooting-section">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Распространенные проблемы</h3>
+                        <div class="common-problems">
+                            <div class="problem">
+                                <h4><i class="fas fa-download"></i> ImagePullBackOff</h4>
+                                <p>Контейнер не может загрузить образ</p>
+                                <ul>
+                                    <li>Проверьте имя образа и тег</li>
+                                    <li>Проверьте доступность реестра</li>
+                                    <li>Проверьте imagePullSecrets для приватных реестров</li>
+                                </ul>
+                            </div>
+                            <div class="problem">
+                                <h4><i class="fas fa-sync-alt"></i> CrashLoopBackOff</h4>
+                                <p>Приложение падает сразу после запуска</p>
+                                <ul>
+                                    <li>Проверьте логи приложения: kubectl logs</li>
+                                    <li>Проверьте Events и probes в kubectl describe</li>
+                                    <li>Зайдите в контейнер и запустите команду вручную</li>
+                                </ul>
+                            </div>
+                            <div class="problem">
+                                <h4><i class="fas fa-clock"></i> Pending Pod</h4>
+                                <p>Pod не может быть запланирован на узел</p>
+                                <ul>
+                                    <li>Недостаточно ресурсов (CPU, Memory)</li>
+                                    <li>Проблемы с nodeSelector/nodeAffinity/taints</li>
+                                    <li>Проблемы с PersistentVolumeClaim</li>
+                                </ul>
+                            </div>
+                            <div class="problem">
+                                <h4><i class="fas fa-network-wired"></i> Service не направляет трафик</h4>
+                                <ul>
+                                    <li>Проверьте selector Service и labels Pod'ов</li>
+                                    <li>Проверьте targetPort Service и порт приложения</li>
+                                    <li>Проверьте kubectl get endpoints</li>
+                                    <li>Проверьте работу kube-proxy</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ansible Section -->
+        <section id="ansible" class="content-section">
+            <h1><i class="fas fa-robot"></i> Ansible: автоматизация управления инфраструктурой</h1>
+            
+            <div class="ansible-concepts">
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <h3><i class="fas fa-desktop"></i> Control Node</h3>
+                        <p>Управляющий сервер с установленным Ansible. С него запускаются все команды и плейбуки.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h3><i class="fas fa-server"></i> Managed Nodes</h3>
+                        <p>Управляемые машины (серверы). На них не требуется установка агента, Ansible работает по SSH.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h3><i class="fas fa-list"></i> Inventory</h3>
+                        <p>Файл (INI или YAML) со списком IP-адресов или доменных имен управляемых серверов, сгруппированных по ролям.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h3><i class="fas fa-play"></i> Playbooks</h3>
+                        <p>YAML-файлы, описывающие желаемое состояние целевых систем. Содержат последовательность задач.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h3><i class="fas fa-puzzle-piece"></i> Модули</h3>
+                        <p>Инструменты для конкретных задач (копирование файлов, установка пакетов, управление сервисами).</p>
+                    </div>
+                    <div class="concept-card">
+                        <h3><i class="fas fa-tasks"></i> Tasks</h3>
+                        <p>Единичные действия, выполняемые на управляемых узлах (установить пакет, скопировать файл).</p>
+                    </div>
+                    <div class="concept-card">
+                        <h3><i class="fas fa-bell"></i> Handlers</h3>
+                        <p>Специальные задачи, запускаемые только по явному уведомлению (notify) от других задач.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h3><i class="fas fa-user-tag"></i> Roles</h3>
+                        <p>Способ организации Playbooks и связанных файлов в логически структурированные и переиспользуемые единицы.</p>
+                    </div>
+                    <div class="concept-card">
+                        <h3><i class="fas fa-equals"></i> Idempotency</h3>
+                        <p>Ключевой принцип Ansible. Плейбуки можно запускать многократно с одинаковым результатом.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="inventory-examples">
+                <h3><i class="fas fa-file-alt"></i> Примеры Inventory</h3>
+                
+                <div class="inventory-format">
+                    <h4>INI формат:</h4>
+                    <pre><code class="language-ini">[webservers]
+web1.example.com
+web2.example.com
+
+[dbservers]
+db1.example.com
+db2.example.com
+
+[all:vars]
+ansible_user=remote_user
+ansible_ssh_private_key_file=~/.ssh/id_rsa</code></pre>
+                </div>
+
+                <div class="inventory-format">
+                    <h4>YAML формат:</h4>
+                    <pre><code class="language-yaml">all:
+  hosts:
+    web1.example.com:
+    web2.example.com:
+  children:
+    webservers:
+      hosts:
+        web1.example.com:
+        web2.example.com:
+    dbservers:
+      hosts:
+        db1.example.com:
+        db2.example.com:
+  vars:
+    ansible_user: remote_user
+    ansible_ssh_private_key_file: ~/.ssh/id_rsa</code></pre>
+                </div>
+            </div>
+
+            <div class="ansible-commands">
+                <h3><i class="fas fa-terminal"></i> Основные команды Ansible</h3>
+                
+                <div class="command-sections">
+                    <div class="command-section">
+                        <h4><i class="fas fa-check"></i> Проверка конфигурации</h4>
+                        <pre><code class="language-bash"># Показать версию Ansible
+ansible --version
+
+# Показать разобранный инвентори
+ansible-inventory -i &lt;inventory_file&gt; --list
+
+# Список хостов из инвентори
+ansible all -i &lt;inventory_file&gt; --list-hosts</code></pre>
+                    </div>
+
+                    <div class="command-section">
+                        <h4><i class="fas fa-bolt"></i> Ad-Hoc команды</h4>
+                        <pre><code class="language-bash"># Проверить связь со всеми хостами
+ansible &lt;group_name&gt; -i &lt;inventory_file&gt; -m ping
+
+# Выполнить команду на всех хостах
+ansible all -i &lt;inventory_file&gt; -m command -a "uptime"
+
+# Установить Nginx с sudo
+ansible webservers -i &lt;inventory_file&gt; -m apt -a "name=nginx state=present" --become
+
+# Проверить статус сервиса
+ansible dbservers -i &lt;inventory_file&gt; -m shell -a "systemctl status postgresql"</code></pre>
+                    </div>
+
+                    <div class="command-section">
+                        <h4><i class="fas fa-play"></i> Выполнение Playbooks</h4>
+                        <pre><code class="language-bash"># Запустить плейбук
+ansible-playbook -i &lt;inventory_file&gt; &lt;playbook_name.yml&gt;
+
+# Проверить без изменений (dry run)
+ansible-playbook -i &lt;inventory_file&gt; &lt;playbook_name.yml&gt; --check
+
+# Показать изменения с diff
+ansible-playbook -i &lt;inventory_file&gt; &lt;playbook_name.yml&gt; --diff
+
+# Проверить синтаксис плейбука
+ansible-playbook -i &lt;inventory_file&gt; &lt;playbook_name.yml&gt; --syntax-check
+
+# Запустить только на указанных хостах
+ansible-playbook -i &lt;inventory_file&gt; &lt;playbook_name.yml&gt; --limit &lt;host_or_group&gt;
+
+# Начать с определенной задачи
+ansible-playbook -i &lt;inventory_file&gt; &lt;playbook_name.yml&gt; --start-at-task "&lt;task_name&gt;"
+
+# Передать переменную из командной строки
+ansible-playbook -i &lt;inventory_file&gt; &lt;playbook_name.yml&gt; -e "variable_name=value"
+
+# Выполнить только задачи с указанными тегами
+ansible-playbook -i &lt;inventory_file&gt; &lt;playbook_name.yml&gt; --tags "tag1,tag2"
+
+# Пропустить задачи с указанными тегами
+ansible-playbook -i &lt;inventory_file&gt; &lt;playbook_name.yml&gt; --skip-tags "tag_to_skip"</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="playbook-example">
+                <h3><i class="fas fa-file-code"></i> Пример Playbook: Установка Nginx</h3>
+                <pre><code class="language-yaml">---
+- name: Configure Nginx Webserver
+  hosts: webservers # Группа хостов из инвентори
+  become: yes # Использовать sudo/root привилегии
+
+  vars:
+    nginx_port: 80
+    nginx_docroot: "/var/www/html/my_website"
+
+  tasks:
+    - name: Ensure Nginx is installed
+      ansible.builtin.apt: # Модуль для управления пакетами
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Ensure Nginx is running and enabled
+      ansible.builtin.service: # Модуль для управления сервисами
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Create web directory
+      ansible.builtin.file: # Модуль для работы с файлами
+        path: "{{ nginx_docroot }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copy index.html
+      ansible.builtin.copy: # Модуль для копирования файлов
+        src: files/index.html # Путь на Control Node
+        dest: "{{ nginx_docroot }}/index.html" # Путь на Managed Node
+
+    - name: Configure Nginx default site
+      ansible.builtin.template: # Модуль для шаблонов Jinja2
+        src: templates/nginx.conf.j2 # Путь к шаблону
+        dest: "/etc/nginx/sites-available/default"
+      notify: Restart Nginx # Уведомить хендлер
+
+  handlers:
+    - name: Restart Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted</code></pre>
+            </div>
+
+            <div class="template-example">
+                <h3><i class="fas fa-code"></i> Пример templates/nginx.conf.j2</h3>
+                <pre><code class="language-nginx">server {
+    listen {{ nginx_port }};
+    listen [::]:{{ nginx_port }};
+    root {{ nginx_docroot }};
+    index index.html index.htm;
+    server_name _;
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- Cheatsheets Section -->
+        <section id="cheatsheets" class="content-section">
+            <h1><i class="fas fa-clipboard-list"></i> Краткие шпаргалки</h1>
+            
+            <div class="cheatsheet-grid">
+                <div class="cheatsheet-card">
+                    <h3><i class="fab fa-dev"></i> DevOps: ключевые принципы</h3>
+                    <ul>
+                        <li><i class="fas fa-robot"></i> Автоматизация всего (CI/CD, тесты, деплой, мониторинг)</li>
+                        <li><i class="fas fa-server"></i> Единая инфраструктура (IaC, Docker, Kubernetes)</li>
+                        <li><i class="fas fa-users"></i> Открытая коммуникация (Dev+Ops+QA)</li>
+                        <li><i class="fas fa-tachometer-alt"></i> Быстрая обратная связь</li>
+                    </ul>
+                </div>
+
+                <div class="cheatsheet-card">
+                    <h3><i class="fab fa-docker"></i> Docker: чтобы не забыть</h3>
+                    <ul>
+                        <li><i class="fas fa-cube"></i> Контейнер ≠ ВМ: меньше ресурсов, быстрее стартует, изолирован</li>
+                        <li><i class="fas fa-bridge"></i> bridge — стандартная сеть, IP динамические</li>
+                        <li><i class="fas fa-server"></i> host — контейнер использует сеть хоста</li>
+                        <li><i class="fas fa-ban"></i> none — сеть отключена</li>
+                        <li><i class="fas fa-layer-group"></i> overlay2 — рекомендуемый драйвер хранения</li>
+                        <li><i class="fas fa-database"></i> OverlayFS — работает поверх ext4; объединяет слои</li>
+                        <li><i class="fas fa-boxes"></i> containerd — управляет snapshotter'ами</li>
+                        <li><i class="fas fa-times"></i> AUFS — устарел и не рекомендуется</li>
+                    </ul>
+                </div>
+
+                <div class="cheatsheet-card">
+                    <h3><i class="fas fa-dharmachakra"></i> Kubernetes: основное</h3>
+                    <ul>
+                        <li><i class="fas fa-server"></i> api-server — главный вход в кластер</li>
+                        <li><i class="fas fa-robot"></i> kubelet — связь между мастер- и воркер-нодами</li>
+                        <li><i class="fas fa-star"></i> QOS — определяет приоритет Pod'ов</li>
+                        <li><i class="fas fa-shield-alt"></i> Calico — сетевые политики и CNI-плагин</li>
+                        <li><i class="fas fa-database"></i> PV/PVC — постоянное хранилище</li>
+                        <li><i class="fas fa-id-card"></i> Каждый Pod получает свой IP</li>
+                        <li><i class="fas fa-network-wired"></i> Service обеспечивает доступ к Pod'ам</li>
+                        <li><i class="fas fa-bug"></i> kubectl describe и kubectl logs — лучшие друзья для траблшутинга</li>
+                    </ul>
+                </div>
+
+                <div class="cheatsheet-card">
+                    <h3><i class="fas fa-robot"></i> Ansible: основы</h3>
+                    <ul>
+                        <li><i class="fas fa-file-code"></i> Всё в YAML</li>
+                        <li><i class="fas fa-server"></i> Один управляющий сервер, много управляемых</li>
+                        <li><i class="fas fa-play"></i> Playbooks — пошаговые сценарии</li>
+                        <li><i class="fas fa-equals"></i> Idempotency — повторные запуски безопасны</li>
+                        <li><i class="fas fa-puzzle-piece"></i> Modules — для конкретных задач</li>
+                        <li><i class="fas fa-user-tag"></i> Roles — для организации и переиспользования кода</li>
+                        <li><i class="fas fa-bell"></i> Handlers — для выполнения действий только при изменениях</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recommendations Section -->
+        <section id="recommendations" class="content-section">
+            <h1><i class="fas fa-lightbulb"></i> Рекомендации для лучшего запоминания</h1>
+            
+            <div class="recommendations-grid">
+                <div class="recommendation-card">
+                    <div class="recommendation-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Понимание vs Зубрежка</h3>
+                    <p>Старайтесь не просто учить команды и определения, а понимать архитектуру и взаимосвязи между компонентами.</p>
+                </div>
+
+                <div class="recommendation-card">
+                    <div class="recommendation-icon">
+                        <i class="fas fa-hands-on"></i>
+                    </div>
+                    <h3>Практика</h3>
+                    <p>Создайте кластер Kubernetes локально (minikube/kind), разверните свои контейнеры с помощью Docker и опишите инфраструктуру через Ansible.</p>
+                </div>
+
+                <div class="recommendation-card">
+                    <div class="recommendation-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3>Визуализация</h3>
+                    <p>Используйте схемы, чтобы визуализировать процессы (например, жизненный цикл контейнера в Docker или поток данных в K8s).</p>
+                </div>
+
+                <div class="recommendation-card">
+                    <div class="recommendation-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3>Непрерывное обучение</h3>
+                    <p>Читайте документацию и следите за новыми инструментами и подходами в DevOps.</p>
+                </div>
+            </div>
+
+            <div class="final-message">
+                <div class="message-content">
+                    <i class="fas fa-map"></i>
+                    <h3>Этот конспект — ваша карта в мире современных IT-платформ</h3>
+                    <p>Используйте его как справочник, возвращайтесь к разделам по мере необходимости и не забывайте практиковаться!</p>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
